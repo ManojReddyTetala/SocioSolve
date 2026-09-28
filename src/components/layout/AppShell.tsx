@@ -1,39 +1,23 @@
 'use client';
 
 import React from 'react';
-import { usePathname } from 'next/navigation';
-import RoleBanner from './RoleBanner';
 import Navbar from './Navbar';
-import Sidebar from './Sidebar';
-import DemoJourneyGuide from './DemoJourneyGuide';
 import ToastContainer from '../ui/ToastContainer';
 import Link from 'next/link';
-import { Heart, Sparkles, Shield, ArrowUpRight, Github } from 'lucide-react';
+import { Sparkles, Shield, Heart } from 'lucide-react';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-
-  // Landing page has a special full-width experience, other pages can optionally show sidebar
-  const isLandingPage = pathname === '/';
-
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-indigo-500 selection:text-white">
-      {/* 1. Top Quick Role Switcher Banner */}
-      <RoleBanner />
-
-      {/* 2. Global Navbar */}
+      {/* 1. Global Unified Navbar */}
       <Navbar />
 
-      {/* 3. Main Area */}
-      <div className="flex-1 flex w-full max-w-7xl mx-auto">
-        {!isLandingPage && <Sidebar />}
+      {/* 2. Main Content Container (Centered, Unified, No Role Sidebars) */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {children}
+      </main>
 
-        <main className="flex-1 w-full min-w-0 p-4 sm:p-6 lg:p-8">
-          {children}
-        </main>
-      </div>
-
-      {/* 4. Global Footer */}
+      {/* 3. Global Footer */}
       <footer className="bg-white border-t border-slate-200 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
@@ -45,7 +29,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 <span className="font-bold text-lg text-slate-900">SocioSolve</span>
               </div>
               <p className="text-xs text-slate-500 leading-relaxed">
-                A digital ecosystem connecting societal challenges with universities, researchers, startups, and industry to co-create measurable impact.
+                A unified digital ecosystem connecting grassroots societal challenges with universities, researchers, startups, and industry to co-create measurable impact.
               </p>
               <div className="text-[11px] text-slate-400 font-medium">
                 Built for Smart India Hackathon (SIH26088)
@@ -53,54 +37,54 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
 
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Platform Links</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Platform Navigation</h4>
               <ul className="space-y-2 text-xs text-slate-600">
-                <li><Link href="/challenges" className="hover:text-indigo-600 transition-colors">Explore Challenges</Link></li>
-                <li><Link href="/submit-challenge" className="hover:text-indigo-600 transition-colors">Submit a Challenge</Link></li>
-                <li><Link href="/organizations" className="hover:text-indigo-600 transition-colors">Universities & Industry Labs</Link></li>
-                <li><Link href="/impact" className="hover:text-indigo-600 transition-colors">Public Impact Dashboard</Link></li>
+                <li><Link href="/" className="hover:text-indigo-600 transition-colors">Home Feed</Link></li>
+                <li><Link href="/explore" className="hover:text-indigo-600 transition-colors">Explore Challenges & Solvers</Link></li>
+                <li><Link href="/network" className="hover:text-indigo-600 transition-colors">Innovation Network</Link></li>
+                <li><Link href="/projects" className="hover:text-indigo-600 transition-colors">Active Projects</Link></li>
+                <li><Link href="/impact" className="hover:text-indigo-600 transition-colors">Verified Impact</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Key Demo Workflows</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Continuous Lifecycle</h4>
               <ul className="space-y-2 text-xs text-slate-600">
-                <li><Link href="/challenges/ch_smart_irrigation" className="hover:text-indigo-600 transition-colors">Smart Irrigation Case Study</Link></li>
-                <li><Link href="/matching/ch_smart_irrigation" className="hover:text-indigo-600 transition-colors">AI Match Engine (94%)</Link></li>
-                <li><Link href="/workspace/proj_smart_irrigation" className="hover:text-indigo-600 transition-colors">Collaboration Workspace</Link></li>
-                <li><Link href="/evaluations/sol_smart_irrigation" className="hover:text-indigo-600 transition-colors">Expert Solution Review</Link></li>
+                <li><span className="text-slate-500">1. Post Grassroots Challenge</span></li>
+                <li><span className="text-slate-500">2. AI Skill & Resource Extraction</span></li>
+                <li><span className="text-slate-500">3. Multi-Institutional Team Formation</span></li>
+                <li><span className="text-slate-500">4. Collaborative Workspace & R&D</span></li>
+                <li><span className="text-slate-500">5. 7-Factor Rubric Expert Review</span></li>
+                <li><span className="text-slate-500">6. Field Pilot & Live Telemetry</span></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Governance & Trust</h4>
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-1.5">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">Trust & Governance</h4>
+              <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-600 space-y-2">
                 <div className="flex items-center gap-1.5 font-semibold text-slate-900">
-                  <Shield className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Verified Public Ecosystem</span>
+                  <Shield className="w-4 h-4 text-emerald-600" />
+                  <span>Verified Open Platform</span>
                 </div>
-                <p className="text-[11px] text-slate-500 leading-normal">
-                  All challenge data is subject to verification by accredited administrators and academic peer evaluation.
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  All users share the same platform. Permissions allow contextual moderation, expert peer evaluation, and collaboration without separate portals.
                 </p>
               </div>
             </div>
           </div>
 
           <div className="border-t border-slate-100 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-            <p>© 2026 SocioSolve Platform. Open Public Good Prototype.</p>
+            <p>© 2026 SocioSolve Platform. Open Public Good Prototype for SIH.</p>
             <div className="flex items-center gap-4">
-              <span>Privacy Policy</span>
+              <span>Community Guidelines</span>
               <span>•</span>
-              <span>Terms of Service</span>
+              <span>Privacy</span>
               <span>•</span>
               <span className="font-semibold text-indigo-600">Smart India Hackathon</span>
             </div>
           </div>
         </div>
       </footer>
-
-      {/* Floating Demo Journey Guide for Judges */}
-      <DemoJourneyGuide />
 
       {/* Floating Toast notification stack */}
       <ToastContainer />

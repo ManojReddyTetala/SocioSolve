@@ -21,17 +21,43 @@ import {
   Clock,
   Layers,
   Flame,
-  Check
+  Check,
+  Lightbulb,
+  Wrench,
+  Plus,
+  GitBranch
 } from 'lucide-react';
+import CoCreateModal from '@/components/modals/CoCreateModal';
 
 export default function ChallengeDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
-  const { challenges, organizations, invitePartner, respondToInvite, currentUser, verifyChallenge } = useApp();
+  const { 
+    challenges, 
+    organizations, 
+    invitePartner, 
+    respondToInvite, 
+    currentUser, 
+    verifyChallenge,
+    expressInterest,
+    startCollaboration 
+  } = useApp();
 
   const challenge = challenges.find(c => c.id === id) || challenges[0];
-  const [activeTab, setActiveTab] = useState<'overview' | 'ai-insights' | 'partners' | 'workspace'>('overview');
+  const [showCoCreateModal, setShowCoCreateModal] = useState(false);
+  const [coCreateTab, setCoCreateTab] = useState<'IDEA' | 'SKILL' | 'SOMEONE' | 'TEAM'>('IDEA');
+  const [coCreateParentId, setCoCreateParentId] = useState<string | undefined>(undefined);
+
+  const ideaNodesList = challenge.ideaNodes || [];
+  const skillContribsList = challenge.skillContributions || [];
+  const coCreatorsCount = challenge.coCreatorsCount || (challenge.interestedUsers?.length || 0) + ideaNodesList.length;
+
+  const openCoCreate = (tab: 'IDEA' | 'SKILL' | 'SOMEONE' | 'TEAM' = 'IDEA', parentId?: string) => {
+    setCoCreateTab(tab);
+    setCoCreateParentId(parentId);
+    setShowCoCreateModal(true);
+  };
 
   const timelineSteps = [
     { label: 'Submitted', date: 'Sep 10', status: 'COMPLETED' },
@@ -118,16 +144,36 @@ export default function ChallengeDetailsPage() {
 
         {/* Action Bar */}
         <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => openCoCreate('IDEA')}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-black text-xs shadow-md shadow-indigo-600/20 flex items-center gap-1.5 transition-all active:scale-95"
+            >
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>✨ Co-create ({coCreatorsCount})</span>
+            </button>
+
+            <button
+              onClick={() => expressInterest(challenge.id)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                challenge.hasExpressedInterest
+                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                  : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm'
+              }`}
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              <span>{challenge.hasExpressedInterest ? 'Expressed Interest ✓' : "I'm Interested in Solving"}</span>
+            </button>
+
             <Link
               href={`/matching/${challenge.id}`}
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-sm flex items-center gap-2 transition-all"
+              className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs shadow-sm flex items-center gap-2 transition-all border border-slate-200"
             >
-              <Sparkles className="w-4 h-4 text-indigo-200" />
-              <span>AI Partner Matching (94% Match)</span>
+              <Sparkles className="w-4 h-4 text-indigo-600" />
+              <span>AI Partner Matching (94%)</span>
             </Link>
 
-            {challenge.activeProjectId && (
+            {challenge.activeProjectId ? (
               <Link
                 href={`/workspace/${challenge.activeProjectId}`}
                 className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs shadow-sm flex items-center gap-2 transition-all"
@@ -135,22 +181,32 @@ export default function ChallengeDetailsPage() {
                 <FolderGit2 className="w-4 h-4 text-emerald-400" />
                 <span>Open Collaboration Workspace →</span>
               </Link>
+            ) : (
+              <button
+                onClick={() => openCoCreate('TEAM')}
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition-all"
+              >
+                <Users className="w-4 h-4 text-white" />
+                <span>Form Solver Team</span>
+              </button>
             )}
           </div>
 
-          {currentUser.role === 'ADMIN' && challenge.status === 'PENDING_VERIFICATION' && (
-            <div className="flex items-center gap-2">
+          {currentUser.role === 'ADMIN' && (
+            <div className="flex items-center gap-2 bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-xl">
+              <ShieldCheck className="w-4 h-4 text-purple-600" />
+              <span className="text-[11px] font-bold text-purple-700">Moderator:</span>
               <button
                 onClick={() => verifyChallenge(challenge.id, 'PUBLISHED')}
-                className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700"
+                className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold text-[11px] hover:bg-emerald-700"
               >
-                Approve & Publish
+                Approve
               </button>
               <button
                 onClick={() => verifyChallenge(challenge.id, 'CHANGES_REQUESTED')}
-                className="px-3 py-1.5 rounded-lg bg-amber-500 text-white font-bold text-xs hover:bg-amber-600"
+                className="px-2.5 py-1 rounded-lg bg-amber-500 text-white font-bold text-[11px] hover:bg-amber-600"
               >
-                Request Changes
+                Request Edit
               </button>
             </div>
           )}
@@ -309,6 +365,90 @@ export default function ChallengeDetailsPage() {
               </div>
             </div>
           )}
+          {/* Co-Create Ideas Tree & Contributor Roster */}
+          <div className="bg-white p-6 rounded-3xl border border-indigo-200 shadow-sm space-y-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
+                  <Sparkles className="w-5 h-5 text-indigo-600" />
+                </span>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900">✨ Co-Create Idea Tree & Contributors</h3>
+                  <p className="text-xs text-slate-500">{ideaNodesList.length} linked ideas • {skillContribsList.length} domain skill contributions</p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => openCoCreate('IDEA')}
+                className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-95"
+              >
+                <Plus className="w-4 h-4" />
+                <span>+ Propose Idea / Skill</span>
+              </button>
+            </div>
+
+            {/* Tree Nodes */}
+            <div className="space-y-3 pt-2">
+              {ideaNodesList.map((node, idx) => {
+                const isChild = !!node.parentId;
+                return (
+                  <div
+                    key={node.id}
+                    className={`p-4 rounded-2xl border transition-all space-y-2 ${
+                      isChild
+                        ? 'ml-6 sm:ml-8 bg-indigo-50/40 border-indigo-200'
+                        : 'bg-slate-50 border-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        {isChild && <GitBranch className="w-4 h-4 text-indigo-500 rotate-90 shrink-0" />}
+                        <span className="font-extrabold text-xs text-slate-900">{node.title}</span>
+                      </div>
+
+                      <button
+                        onClick={() => openCoCreate('IDEA', node.id)}
+                        className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:border-indigo-400 text-indigo-700 font-bold text-[10px] shrink-0"
+                      >
+                        ↳ Build on this
+                      </button>
+                    </div>
+
+                    <p className="text-xs text-slate-700 leading-relaxed font-normal">{node.description}</p>
+
+                    <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-100">
+                      <span>By <strong className="text-slate-700">{node.author.name}</strong> ({node.author.org})</span>
+                      <span>{node.likesCount || 0} supporters</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Skill Pledges */}
+            {skillContribsList.length > 0 && (
+              <div className="pt-4 border-t border-slate-100 space-y-2">
+                <div className="text-xs font-bold text-slate-900">🛠️ Pledged Contributor Skills:</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {skillContribsList.map(sk => (
+                    <div key={sk.id} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <img src={sk.userAvatar} alt={sk.userName} className="w-6 h-6 rounded-md object-cover" />
+                        <span className="font-bold text-slate-800 truncate">{sk.userName}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1 shrink-0">
+                        {sk.skills.slice(0, 2).map((s, idx) => (
+                          <span key={idx} className="px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold text-[9px]">
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right Column (1 col): AI Analysis Badge + Recommended Partners */}
@@ -406,6 +546,18 @@ export default function ChallengeDetailsPage() {
         </div>
 
       </div>
+
+      {/* CoCreate Modal */}
+      <CoCreateModal
+        challenge={challenge}
+        isOpen={showCoCreateModal}
+        initialTab={coCreateTab}
+        initialParentId={coCreateParentId}
+        onClose={() => {
+          setShowCoCreateModal(false);
+          setCoCreateParentId(undefined);
+        }}
+      />
     </div>
   );
 }

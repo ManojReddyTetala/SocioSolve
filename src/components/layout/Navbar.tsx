@@ -8,23 +8,34 @@ import {
   Search, 
   Bell, 
   Sparkles, 
-  Building2, 
+  Compass, 
+  FolderGit2, 
+  BarChart3, 
+  PlusCircle, 
+  Menu, 
+  X, 
   ExternalLink,
-  PlusCircle,
-  Menu,
-  X,
-  Compass,
-  FolderGit2,
-  BarChart3,
+  Users,
   ShieldCheck,
+  ChevronDown,
   UserCheck
 } from 'lucide-react';
+import { UserRole } from '@/types';
 
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  const { currentUser, notifications, markNotificationRead, markAllNotificationsRead, challenges, projects } = useApp();
+  const { 
+    currentUser, 
+    notifications, 
+    markNotificationRead, 
+    markAllNotificationsRead, 
+    challenges, 
+    openCreateModal 
+  } = useApp();
+
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -41,16 +52,16 @@ export default function Navbar() {
     : [];
 
   const navLinks = [
-    { label: 'Explore Challenges', href: '/challenges', icon: <Compass className="w-4 h-4" /> },
-    { label: 'AI Matching', href: '/matching/ch_smart_irrigation', icon: <Sparkles className="w-4 h-4" /> },
-    { label: 'Workspaces', href: '/workspace/proj_smart_irrigation', icon: <FolderGit2 className="w-4 h-4" /> },
-    { label: 'Partners & Labs', href: '/organizations', icon: <Building2 className="w-4 h-4" /> },
+    { label: 'Home', href: '/', icon: <Sparkles className="w-4 h-4" /> },
+    { label: 'Explore', href: '/explore', icon: <Compass className="w-4 h-4" /> },
+    { label: 'Network', href: '/network', icon: <Users className="w-4 h-4" /> },
+    { label: 'Projects', href: '/projects', icon: <FolderGit2 className="w-4 h-4" /> },
     { label: 'Impact', href: '/impact', icon: <BarChart3 className="w-4 h-4" /> },
   ];
 
   return (
     <>
-      <header className="bg-white border-b border-slate-200/90 sticky top-[33px] z-30 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+      <header className="bg-white border-b border-slate-200/90 sticky top-0 z-30 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           
           {/* Logo */}
@@ -68,17 +79,17 @@ export default function Navbar() {
               </div>
             </Link>
 
-            {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-1 ml-2 text-xs font-semibold text-slate-600">
+            {/* Common Navigation Links (Identical for everyone) */}
+            <nav className="hidden md:flex items-center gap-1 ml-2 text-xs font-semibold text-slate-600">
               {navLinks.map(link => {
-                const isActive = pathname === link.href;
+                const isActive = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href);
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                    className={`px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
                       isActive
-                        ? 'text-indigo-600 bg-indigo-50 font-bold'
+                        ? 'text-indigo-600 bg-indigo-50/80 font-bold'
                         : 'hover:text-slate-900 hover:bg-slate-100'
                     }`}
                   >
@@ -86,68 +97,55 @@ export default function Navbar() {
                   </Link>
                 );
               })}
-
-              {currentUser.role === 'ADMIN' && (
-                <Link
-                  href="/admin"
-                  className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
-                    pathname === '/admin'
-                      ? 'text-emerald-700 bg-emerald-50 font-bold'
-                      : 'text-emerald-600 hover:bg-emerald-50 font-semibold'
-                  }`}
-                >
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Admin Governance</span>
-                </Link>
-              )}
-
-              {currentUser.role === 'EXPERT' && (
-                <Link
-                  href="/evaluations/sol_smart_irrigation"
-                  className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
-                    pathname.startsWith('/evaluations')
-                      ? 'text-purple-700 bg-purple-50 font-bold'
-                      : 'text-purple-600 hover:bg-purple-50 font-semibold'
-                  }`}
-                >
-                  <UserCheck className="w-3.5 h-3.5" />
-                  <span>Assigned Review</span>
-                </Link>
-              )}
             </nav>
           </div>
 
-          {/* Search Trigger */}
-          <div className="flex-1 max-w-xs hidden md:block">
+          {/* Universal Search Bar Trigger */}
+          <div className="flex-1 max-w-xs hidden lg:block">
             <button
               onClick={() => setShowSearchModal(true)}
-              className="w-full flex items-center justify-between px-3 py-1.5 text-xs text-slate-400 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition-all text-left shadow-inner"
+              className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-slate-400 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition-all text-left shadow-inner"
             >
               <span className="flex items-center gap-2">
                 <Search className="w-3.5 h-3.5 text-slate-400" />
-                <span>Search challenges, skills...</span>
+                <span>Search challenges, people, skills...</span>
               </span>
-              <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[9px] font-mono text-slate-400 bg-white rounded border border-slate-200 shadow-sm">
+              <kbd className="px-1.5 py-0.5 text-[9px] font-mono text-slate-400 bg-white rounded border border-slate-200 shadow-xs">
                 Ctrl K
               </kbd>
             </button>
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-2.5">
-            {/* Submit Challenge CTA */}
-            <Link
-              href="/submit-challenge"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm transition-all hover:shadow hover:shadow-indigo-200"
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Universal + Create CTA */}
+            <button
+              onClick={() => openCreateModal('CHALLENGE')}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-xl shadow-sm transition-all hover:shadow hover:shadow-indigo-200"
             >
-              <PlusCircle className="w-3.5 h-3.5" />
-              <span>Submit Challenge</span>
+              <PlusCircle className="w-4 h-4" />
+              <span>Create</span>
+            </button>
+
+            {/* Messages Icon */}
+            <Link
+              href="/messages"
+              className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors"
+              title="Direct & Team Messages"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <span className="absolute top-1 right-1 w-2 h-2 bg-indigo-600 rounded-full"></span>
             </Link>
 
-            {/* Notification Bell with Dropdown */}
+            {/* Notifications Bell with Dropdown */}
             <div className="relative">
               <button
-                onClick={() => setShowNotifications(!showNotifications)}
+                onClick={() => {
+                  setShowNotifications(!showNotifications);
+                  setShowUserMenu(false);
+                }}
                 className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors"
                 title="Notifications"
               >
@@ -170,14 +168,23 @@ export default function Navbar() {
                         </span>
                       )}
                     </div>
-                    {unreadCount > 0 && (
-                      <button
-                        onClick={markAllNotificationsRead}
-                        className="text-[11px] text-indigo-600 hover:text-indigo-800 font-semibold"
+                    <div className="flex items-center gap-2">
+                      {unreadCount > 0 && (
+                        <button
+                          onClick={markAllNotificationsRead}
+                          className="text-[11px] text-indigo-600 hover:text-indigo-800 font-semibold"
+                        >
+                          Mark read
+                        </button>
+                      )}
+                      <Link
+                        href="/notifications"
+                        onClick={() => setShowNotifications(false)}
+                        className="text-[11px] text-slate-500 hover:text-slate-800"
                       >
-                        Mark read
-                      </button>
-                    )}
+                        View all
+                      </Link>
+                    </div>
                   </div>
 
                   <div className="max-h-72 overflow-y-auto divide-y divide-slate-100 text-xs">
@@ -209,31 +216,82 @@ export default function Navbar() {
                       ))
                     )}
                   </div>
+                  <div className="p-2 border-t border-slate-100 text-center">
+                    <Link
+                      href="/notifications"
+                      onClick={() => setShowNotifications(false)}
+                      className="text-xs font-semibold text-indigo-600 hover:text-indigo-700"
+                    >
+                      Open Notification Center →
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* User Profile Card / Switcher Button */}
-            <Link
-              href="/auth"
-              className="flex items-center gap-2 pl-2 border-l border-slate-200 hover:opacity-90 transition-opacity"
-              title="Click to change role or view profile"
-            >
-              <img
-                src={currentUser.avatar}
-                alt={currentUser.name}
-                className="w-8 h-8 rounded-xl object-cover ring-1 ring-slate-200"
-              />
-              <div className="hidden xl:block text-left">
-                <div className="text-xs font-bold text-slate-900 leading-tight truncate max-w-[120px]">{currentUser.name}</div>
-                <div className="text-[10px] text-indigo-600 font-semibold">{currentUser.role.replace('_', ' ')}</div>
-              </div>
-            </Link>
+            {/* User Profile Avatar with Clean Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setShowUserMenu(!showUserMenu);
+                  setShowNotifications(false);
+                }}
+                className="flex items-center gap-2 pl-2 border-l border-slate-200 hover:opacity-90 transition-opacity"
+              >
+                <img
+                  src={currentUser.avatar}
+                  alt={currentUser.name}
+                  className="w-8 h-8 rounded-xl object-cover ring-1 ring-slate-200"
+                />
+                <div className="hidden xl:block text-left">
+                  <div className="text-xs font-bold text-slate-900 leading-tight truncate max-w-[120px]">{currentUser.name}</div>
+                  <div className="text-[10px] text-indigo-600 font-semibold">{currentUser.role.replace('_', ' ')}</div>
+                </div>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden xl:block" />
+              </button>
 
-            {/* Mobile menu button */}
+              {showUserMenu && (
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 py-2.5 z-50 animate-fade-in text-xs">
+                  <div className="px-4 py-2 border-b border-slate-100">
+                    <div className="font-bold text-slate-900">{currentUser.name}</div>
+                    <div className="text-[11px] text-slate-500">{currentUser.organizationName || currentUser.title}</div>
+                    <div className="text-[10px] text-indigo-600 font-bold mt-0.5">{currentUser.role.replace('_', ' ')}</div>
+                  </div>
+
+                  <div className="py-1">
+                    <Link
+                      href="/profile"
+                      onClick={() => setShowUserMenu(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-slate-700 hover:bg-slate-50 font-medium"
+                    >
+                      <UserCheck className="w-4 h-4 text-slate-400" />
+                      <span>View My Profile</span>
+                    </Link>
+                    <Link
+                      href="/projects"
+                      onClick={() => setShowUserMenu(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-slate-700 hover:bg-slate-50 font-medium"
+                    >
+                      <FolderGit2 className="w-4 h-4 text-slate-400" />
+                      <span>My Projects & Workspaces</span>
+                    </Link>
+                    <Link
+                      href="/network"
+                      onClick={() => setShowUserMenu(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-slate-700 hover:bg-slate-50 font-medium"
+                    >
+                      <Users className="w-4 h-4 text-slate-400" />
+                      <span>My Network</span>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile menu toggle button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg"
+              className="md:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -242,7 +300,7 @@ export default function Navbar() {
 
         {/* Mobile menu dropdown */}
         {mobileMenuOpen && (
-          <div className="lg:hidden px-4 pt-2 pb-4 border-t border-slate-200 bg-white space-y-1.5 text-xs">
+          <div className="md:hidden px-4 pt-2 pb-4 border-t border-slate-200 bg-white space-y-1.5 text-xs">
             {navLinks.map(link => (
               <Link
                 key={link.href}
@@ -253,27 +311,41 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            {currentUser.role === 'ADMIN' && (
-              <Link
-                href="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 font-bold text-emerald-700 bg-emerald-50 rounded-lg"
-              >
-                Admin Governance
-              </Link>
-            )}
             <Link
-              href="/submit-challenge"
+              href="/messages"
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-center px-4 py-2.5 font-bold text-white bg-indigo-600 rounded-xl mt-2"
+              className="block px-3 py-2 font-medium text-slate-700 hover:bg-slate-50 rounded-lg"
             >
-              + Submit Challenge
+              Messages
             </Link>
+            <Link
+              href="/notifications"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 font-medium text-slate-700 hover:bg-slate-50 rounded-lg"
+            >
+              Notifications
+            </Link>
+            <Link
+              href="/profile"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 font-medium text-slate-700 hover:bg-slate-50 rounded-lg"
+            >
+              My Profile
+            </Link>
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                openCreateModal('CHALLENGE');
+              }}
+              className="w-full text-center px-4 py-2.5 font-bold text-white bg-indigo-600 rounded-xl mt-2"
+            >
+              + Create Post / Challenge
+            </button>
           </div>
         )}
       </header>
 
-      {/* Global Search Modal */}
+      {/* Global Search Modal (Ctrl+K) */}
       {showSearchModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-start justify-center pt-20 px-4">
           <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-fade-in">
@@ -335,7 +407,7 @@ export default function Navbar() {
 
             <div className="p-3 bg-slate-50 border-t border-slate-200 text-[11px] text-slate-500 flex justify-between">
               <span>Press ESC to dismiss</span>
-              <span className="font-semibold text-indigo-600">Realtime Index</span>
+              <span className="font-semibold text-indigo-600">Realtime Unified Search</span>
             </div>
           </div>
         </div>

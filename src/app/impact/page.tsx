@@ -8,9 +8,6 @@ import {
   Area, 
   BarChart, 
   Bar, 
-  PieChart, 
-  Pie, 
-  Cell, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
@@ -30,11 +27,14 @@ import {
   Layers, 
   Info,
   DollarSign,
-  ArrowUpRight
+  ArrowRight,
+  ShieldCheck,
+  Building2,
+  FolderGit2
 } from 'lucide-react';
 
 export default function ImpactPage() {
-  const { impacts, stats, updateImpactMetrics } = useApp();
+  const { impacts, stats, updateImpactMetrics, currentUser } = useApp();
   const smartIrrigationImpact = impacts[0];
 
   const [farmersCount, setFarmersCount] = useState<number>(smartIrrigationImpact?.farmersOrBeneficiariesReached || 1240);
@@ -52,282 +52,265 @@ export default function ImpactPage() {
   ];
 
   return (
-    <div className="space-y-8">
-      {/* 1. Header Banner */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5">
-                <BarChart3 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Verified Impact Telemetry</span>
-              </span>
-              <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">
-                Project-reported & Field Measured
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
-              Social, Economic & Environmental Impact
-            </h1>
-            <p className="text-xs text-slate-500 mt-1">
-              Tracking real-world transformation from grassroots challenge submissions to field deployments.
-            </p>
+    <div className="space-y-8 pb-12">
+      {/* 1. Impact Hero Header */}
+      <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 rounded-3xl p-6 sm:p-10 text-white relative overflow-hidden shadow-lg border border-indigo-700/50">
+        <div className="max-w-2xl relative z-10 space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-xs font-semibold text-emerald-300">
+            <BarChart3 className="w-3.5 h-3.5" />
+            <span>Verified Real-World Telemetry</span>
           </div>
+          <h1 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
+            Societal, Economic & Ecological Impact
+          </h1>
+          <p className="text-xs sm:text-sm text-indigo-200/90 leading-relaxed">
+            See how grassroots challenges crowdsourced across India are turning into measurable, verified outcomes through university and industry partnerships.
+          </p>
 
-          <div className="flex items-center gap-2">
+          <div className="pt-2 flex flex-wrap items-center gap-3">
             <button
               onClick={() => setIsLiveAdjusting(!isLiveAdjusting)}
-              className="px-4 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center gap-1.5 transition-all"
+              className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition-all flex items-center gap-1.5"
             >
-              <Sliders className="w-4 h-4" />
-              <span>{isLiveAdjusting ? 'Close Adjuster' : 'Simulate Metric Update'}</span>
+              <Sliders className="w-3.5 h-3.5 text-emerald-300" />
+              <span>{isLiveAdjusting ? 'Close Sensor Simulator' : '⚡ Simulate Field Sensor Update'}</span>
             </button>
           </div>
         </div>
 
-        {/* Live Simulator Drawer */}
-        {isLiveAdjusting && (
-          <div className="p-4 rounded-2xl bg-indigo-900 text-white space-y-4 animate-fade-in text-xs">
-            <div className="font-bold flex items-center gap-2 text-indigo-200">
-              <Sparkles className="w-4 h-4 text-amber-300" />
-              <span>Field Sensor Live Data Simulator (Judge Demonstration Tool)</span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[11px] font-semibold text-indigo-300 mb-1">
-                  Beneficiaries Reached: {farmersCount.toLocaleString()} farmers
-                </label>
-                <input
-                  type="range"
-                  min="500"
-                  max="5000"
-                  step="100"
-                  value={farmersCount}
-                  onChange={e => setFarmersCount(parseInt(e.target.value))}
-                  className="w-full accent-emerald-400 cursor-pointer"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-semibold text-indigo-300 mb-1">
-                  Cost Savings: ₹{(savingsCount / 100000).toFixed(1)} Lakhs
-                </label>
-                <input
-                  type="range"
-                  min="100000"
-                  max="1200000"
-                  step="20000"
-                  value={savingsCount}
-                  onChange={e => setSavingsCount(parseInt(e.target.value))}
-                  className="w-full accent-emerald-400 cursor-pointer"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end">
-              <button
-                onClick={handleUpdate}
-                className="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs"
-              >
-                Apply Live Sync
-              </button>
-            </div>
+        {/* Global Impact Numbers Banner */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8 pt-6 border-t border-white/10 relative z-10">
+          <div>
+            <div className="text-xs text-indigo-200 font-semibold uppercase tracking-wider">Challenges Solved</div>
+            <div className="text-2xl sm:text-3xl font-black text-white mt-1">1,240+</div>
           </div>
-        )}
+          <div>
+            <div className="text-xs text-indigo-200 font-semibold uppercase tracking-wider">Active Projects</div>
+            <div className="text-2xl sm:text-3xl font-black text-emerald-400 mt-1">356</div>
+          </div>
+          <div>
+            <div className="text-xs text-indigo-200 font-semibold uppercase tracking-wider">Citizens Impacted</div>
+            <div className="text-2xl sm:text-3xl font-black text-amber-300 mt-1">42,000+</div>
+          </div>
+          <div>
+            <div className="text-xs text-indigo-200 font-semibold uppercase tracking-wider">Economic Savings</div>
+            <div className="text-2xl sm:text-3xl font-black text-indigo-300 mt-1">₹38.4L</div>
+          </div>
+        </div>
       </div>
 
-      {/* 2. Primary Case Study: Smart Irrigation for Rural Farmers */}
-      <div className="bg-white rounded-3xl border border-indigo-200 p-6 sm:p-8 shadow-md space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100">
-          <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-600">Featured Deployment Pilot</span>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900">
-              Smart Irrigation for Rural Farmers
-            </h2>
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-0.5">
-              <MapPin className="w-3.5 h-3.5 text-slate-400" />
-              <span>{smartIrrigationImpact.location}</span>
+      {/* Live Simulator Drawer (for demonstrating reactive telemetry to SIH judges) */}
+      {isLiveAdjusting && (
+        <div className="p-6 rounded-3xl bg-slate-900 text-white border border-slate-700 shadow-xl space-y-4 animate-fade-in text-xs">
+          <div className="font-bold flex items-center justify-between">
+            <span className="flex items-center gap-2 text-indigo-300">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span>IoT Soil Sensor Live Stream Telemetry Adjuster</span>
+            </span>
+            <span className="text-[10px] bg-indigo-500/30 text-indigo-200 px-2.5 py-0.5 rounded-full border border-indigo-400/30">
+              Interactive Test Tool
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+            <div className="space-y-2">
+              <div className="flex justify-between font-semibold">
+                <span className="text-slate-300">Active Farmers Reached:</span>
+                <span className="text-emerald-400 font-bold">{farmersCount.toLocaleString()} farmers</span>
+              </div>
+              <input
+                type="range"
+                min="500"
+                max="5000"
+                step="50"
+                value={farmersCount}
+                onChange={e => setFarmersCount(parseInt(e.target.value))}
+                className="w-full accent-emerald-500 cursor-pointer"
+              />
             </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between font-semibold">
+                <span className="text-slate-300">Farmer Cost Savings:</span>
+                <span className="text-indigo-300 font-bold">₹{(savingsCount / 100000).toFixed(2)} Lakhs</span>
+              </div>
+              <input
+                type="range"
+                min="50000"
+                max="1000000"
+                step="10000"
+                value={savingsCount}
+                onChange={e => setSavingsCount(parseInt(e.target.value))}
+                className="w-full accent-indigo-400 cursor-pointer"
+              />
+            </div>
+          </div>
+
+          <div className="pt-2 flex justify-end gap-2">
+            <button
+              onClick={() => setIsLiveAdjusting(false)}
+              className="px-3 py-1.5 rounded-xl text-slate-300 hover:text-white"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleUpdate}
+              className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-all shadow-md"
+            >
+              Apply Live Update
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Featured Field Pilot Telemetry (Smart Irrigation Case Study) */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                🌾 Active Field Pilot
+              </span>
+              <span className="text-xs text-slate-400 flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-slate-400" /> East Godavari District, Andhra Pradesh
+              </span>
+            </div>
+            <h2 className="text-xl font-black text-slate-900 mt-1">
+              Smart Irrigation Automation for Paddy & Sugarcane Farmers
+            </h2>
           </div>
 
           <Link
             href="/workspace/proj_smart_irrigation"
-            className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 self-start sm:self-center"
+            className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 self-start md:self-auto"
           >
-            <span>Project Workspace</span>
-            <ArrowUpRight className="w-4 h-4" />
+            <span>Open Project Workspace</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        {/* 4 Big KPI Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 text-center">
-            <div className="text-2xl sm:text-3xl font-black text-indigo-700">
+        {/* 4 Metric Badges */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <span className="text-[11px] font-bold text-slate-400 uppercase">Beneficiaries</span>
+            <div className="text-2xl font-black text-slate-900 mt-0.5">
               {smartIrrigationImpact.farmersOrBeneficiariesReached.toLocaleString()}
             </div>
-            <div className="text-xs font-bold text-slate-600 mt-1">Farmers Reached</div>
+            <p className="text-[11px] text-emerald-600 font-semibold mt-0.5">Across 3 rural villages</p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-sky-50/50 border border-sky-100 text-center">
-            <div className="text-2xl sm:text-3xl font-black text-sky-700">
-              {smartIrrigationImpact.villagesCovered}
-            </div>
-            <div className="text-xs font-bold text-slate-600 mt-1">Villages Covered</div>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 text-center">
-            <div className="text-2xl sm:text-3xl font-black text-emerald-600">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <span className="text-[11px] font-bold text-slate-400 uppercase">Water Reduction</span>
+            <div className="text-2xl font-black text-emerald-600 mt-0.5">
               {smartIrrigationImpact.resourceSavingsPercentage}%
             </div>
-            <div className="text-xs font-bold text-slate-600 mt-1">Water Reduction</div>
+            <p className="text-[11px] text-slate-500 mt-0.5">Groundwater conserved</p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-100 text-center">
-            <div className="text-2xl sm:text-3xl font-black text-amber-700">
-              ₹{(smartIrrigationImpact.costSavingsINR / 100000).toFixed(1)}L
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <span className="text-[11px] font-bold text-slate-400 uppercase">Direct Savings</span>
+            <div className="text-2xl font-black text-indigo-600 mt-0.5">
+              ₹{(smartIrrigationImpact.costSavingsINR / 100000).toFixed(2)}L
             </div>
-            <div className="text-xs font-bold text-slate-600 mt-1">Estimated Savings</div>
+            <p className="text-[11px] text-slate-500 mt-0.5">In electricity & diesel pumps</p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <span className="text-[11px] font-bold text-slate-400 uppercase">Sensor Telemetry</span>
+            <div className="text-2xl font-black text-purple-600 mt-0.5">
+              24/7 Live
+            </div>
+            <p className="text-[11px] text-emerald-600 font-semibold mt-0.5">LoRaWAN Gateway Active</p>
           </div>
         </div>
 
-        {/* Before vs After & Timeline Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
-          {/* Before vs After Water Consumption Bar */}
-          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+        {/* Recharts Telemetry Visualizations */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
+          {/* Timeline Chart */}
+          <div className="p-5 rounded-2xl border border-slate-200 bg-white space-y-3">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-xs sm:text-sm text-slate-900">Groundwater Extraction Comparison</h3>
-                <p className="text-[11px] text-slate-500">Relative water pumping volume per paddy crop cycle</p>
-              </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                -18% Water Saved
-              </span>
+              <h3 className="font-bold text-xs sm:text-sm text-slate-900">Farmer Adoption & Water Conserved Timeline</h3>
+              <span className="text-[10px] text-slate-400">Monthly Progress</span>
             </div>
-
-            <div className="h-48 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={beforeAfterWaterData} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
-                  <XAxis type="number" domain={[0, 100]} unit="%" tick={{ fontSize: 11 }} />
-                  <YAxis type="category" dataKey="stage" tick={{ fontSize: 10 }} width={140} />
-                  <Tooltip formatter={(val: any) => [`${val}%`, 'Water Volume']} />
-                  <Bar dataKey="waterUsage" radius={[0, 8, 8, 0]}>
-                    {beforeAfterWaterData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="text-[11px] text-slate-600 space-y-1 bg-white p-3 rounded-xl border border-slate-200">
-              <div>• <strong>Before:</strong> {smartIrrigationImpact.beforeValue}</div>
-              <div>• <strong>After Pilot:</strong> {smartIrrigationImpact.afterValue}</div>
-            </div>
-          </div>
-
-          {/* Beneficiaries Growth Timeline Area Chart */}
-          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-xs sm:text-sm text-slate-900">Pilot Adoption Timeline</h3>
-                <p className="text-[11px] text-slate-500">Farmers connected across Mandapeta mandals</p>
-              </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">
-                Live Sensor Telemetry
-              </span>
-            </div>
-
-            <div className="h-48 w-full">
+            <div className="h-60 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={smartIrrigationImpact.progressTimeline}>
                   <defs>
                     <linearGradient id="colorFarmers" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.4}/>
-                      <stop offset="95%" stopColor="#4f46e5" stopOpacity={0.0}/>
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4}/>
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="colorWater" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} />
+                  <YAxis tick={{ fontSize: 11, fill: '#64748b' }} />
                   <Tooltip />
-                  <Area type="monotone" dataKey="beneficiaries" stroke="#4f46e5" strokeWidth={3} fillOpacity={1} fill="url(#colorFarmers)" name="Farmers Reached" />
+                  <Legend />
+                  <Area type="monotone" dataKey="beneficiaries" name="Farmers Connected" stroke="#6366f1" fillOpacity={1} fill="url(#colorFarmers)" />
+                  <Area type="monotone" dataKey="resourceSaved" name="Water Saved (kL)" stroke="#10b981" fillOpacity={1} fill="url(#colorWater)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
+          </div>
 
-            <div className="text-[11px] text-slate-500 text-center">
-              Field telemetry updated hourly via solar LoRaWAN gateway.
+          {/* Baseline vs Current Water Usage Bar */}
+          <div className="p-5 rounded-2xl border border-slate-200 bg-white space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-xs sm:text-sm text-slate-900">Water Consumption Index (Baseline vs Current)</h3>
+              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">18% Reduction</span>
+            </div>
+            <div className="h-60 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={beforeAfterWaterData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="stage" tick={{ fontSize: 10, fill: '#64748b' }} />
+                  <YAxis tick={{ fontSize: 11, fill: '#64748b' }} domain={[0, 120]} />
+                  <Tooltip />
+                  <Bar dataKey="waterUsage" name="Water Index (%)" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 3. Platform-Wide Aggregate Statistics */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">Platform-Wide Aggregate Metrics</span>
-            <h2 className="text-xl font-extrabold text-slate-900">National SocioSolve Ecosystem Impact</h2>
+      {/* 3. Additional Impact Case Studies */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700">
+              Healthcare & AI
+            </span>
+            <span className="text-xs text-slate-400">Araku Valley, AP</span>
           </div>
-          <span className="text-xs font-bold text-slate-500">42,000+ Total Beneficiaries</span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Challenges by Category Bar Chart */}
-          <div className="space-y-3">
-            <h3 className="font-bold text-xs text-slate-900 uppercase tracking-wider">Challenges by Thematic Domain</h3>
-            <div className="h-56 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stats.categoryBreakdown}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                  <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} />
-                  <Tooltip />
-                  <Bar dataKey="count" fill="#4f46e5" radius={[6, 6, 0, 0]}>
-                    {stats.categoryBreakdown.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Monthly Deployed Solutions Trend */}
-          <div className="space-y-3">
-            <h3 className="font-bold text-xs text-slate-900 uppercase tracking-wider">Solutions Deployed Over Time</h3>
-            <div className="h-56 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={stats.monthlyImpactTrend}>
-                  <defs>
-                    <linearGradient id="colorDeployed" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0.0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                  <XAxis dataKey="month" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} />
-                  <Tooltip />
-                  <Area type="monotone" dataKey="deployed" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorDeployed)" name="Deployed Solutions" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+          <h3 className="font-bold text-base text-slate-900">Remote Tele-Diagnostics for Tribal Primary Health Centers</h3>
+          <p className="text-xs text-slate-600 leading-relaxed">
+            AI edge kit assisting frontline ASHA workers in detecting anemia and diabetic retinopathy in remote hilly terrains without reliable internet.
+          </p>
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-700">
+            <span>👩‍⚕️ 4,800 Patients Screened</span>
+            <span className="text-emerald-600">6 Primary Clinics</span>
           </div>
         </div>
 
-        {/* State Breakdown Horizontal Bars */}
-        <div className="pt-4 border-t border-slate-100 space-y-3">
-          <h3 className="font-bold text-xs text-slate-900 uppercase tracking-wider">State-wise Distribution</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-            {stats.stateBreakdown.map(s => (
-              <div key={s.state} className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-700">{s.state}</span>
-                <span className="font-extrabold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">{s.count}</span>
-              </div>
-            ))}
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700">
+              Solar & Livelihood
+            </span>
+            <span className="text-xs text-slate-400">Kakinada Coast, AP</span>
+          </div>
+          <h3 className="font-bold text-base text-slate-900">Solar-Powered Micro Cold Storage for Coastal Fisherfolk</h3>
+          <p className="text-xs text-slate-600 leading-relaxed">
+            Phase-change material cooling lockers reducing fish post-harvest spoilage by 42% for small-boat artisanal fishermen.
+          </p>
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-700">
+            <span>🐟 350 Fisherfolk Benefited</span>
+            <span className="text-emerald-600">42% Spoilage Cut</span>
           </div>
         </div>
       </div>

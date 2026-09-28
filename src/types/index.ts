@@ -34,10 +34,17 @@ export interface User {
   role: UserRole;
   avatar: string;
   title: string;
+  bio?: string;
   organizationId?: string;
   organizationName?: string;
   location: string;
   skills?: string[];
+  interests?: string[];
+  connectionsCount?: number;
+  followersCount?: number;
+  projectsContributed?: number;
+  challengesSubmitted?: number;
+  impactScore?: number;
   verificationStatus: 'VERIFIED' | 'PENDING' | 'UNVERIFIED';
 }
 
@@ -71,8 +78,70 @@ export interface AIAnalysisResult {
     id: string;
     title: string;
     location: string;
-    similarityScore: number; // e.g. 78%
+    similarityScore: number;
   }[];
+}
+
+export interface PostComment {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorRole: string;
+  authorOrg: string;
+  authorAvatar: string;
+  content: string;
+  createdAt: string;
+  likes: number;
+}
+
+export interface InterestedUser {
+  userId: string;
+  name: string;
+  role: UserRole;
+  organizationName: string;
+  avatar: string;
+  skills: string[];
+  expressedAt: string;
+  type: 'STUDENT' | 'INDUSTRY' | 'RESEARCHER' | 'NGO' | 'EXPERT';
+}
+
+export interface CoCreateIdeaNode {
+  id: string;
+  challengeId: string;
+  parentId?: string;
+  title: string;
+  description: string;
+  author: {
+    userId: string;
+    name: string;
+    avatar: string;
+    org: string;
+  };
+  createdAt: string;
+  likesCount?: number;
+}
+
+export interface SkillContribution {
+  id: string;
+  challengeId: string;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  userOrg: string;
+  skills: string[];
+  createdAt: string;
+}
+
+export interface IntroducedPartner {
+  id: string;
+  challengeId: string;
+  targetId: string;
+  targetName: string;
+  targetType: string;
+  targetAvatar: string;
+  recommendedBy: string;
+  reason: string;
+  createdAt: string;
 }
 
 export interface Challenge {
@@ -110,6 +179,12 @@ export interface Challenge {
   aiAnalysis?: AIAnalysisResult;
   partnerCount: number;
   progressPercent: number;
+  likesCount?: number;
+  hasLiked?: boolean;
+  comments?: PostComment[];
+  interestedUsers?: InterestedUser[];
+  hasExpressedInterest?: boolean;
+  isSaved?: boolean;
   matchedPartners?: {
     organizationId: string;
     matchScore: number;
@@ -117,6 +192,53 @@ export interface Challenge {
     status: 'INVITED' | 'ACCEPTED' | 'DECLINED' | 'EXPLORING';
   }[];
   activeProjectId?: string;
+
+  // Co-Create Summary Metrics & Collections
+  coCreatorsCount?: number;
+  ideasCount?: number;
+  skillContributorsCount?: number;
+  ideaNodes?: CoCreateIdeaNode[];
+  skillContributions?: SkillContribution[];
+  introductions?: IntroducedPartner[];
+}
+
+export interface SolutionIdea {
+  id: string;
+  challengeId?: string;
+  challengeTitle?: string;
+  parentId?: string;
+  title: string;
+  summary: string;
+  author: {
+    userId: string;
+    name: string;
+    organization: string;
+    avatar: string;
+  };
+  technology: string[];
+  likesCount: number;
+  hasLiked?: boolean;
+  comments: PostComment[];
+  createdAt: string;
+}
+
+export interface ProjectUpdate {
+  id: string;
+  projectId: string;
+  projectTitle: string;
+  author: {
+    userId: string;
+    name: string;
+    role: string;
+    avatar: string;
+  };
+  title: string;
+  content: string;
+  metricsHighlight?: string;
+  likesCount: number;
+  hasLiked?: boolean;
+  comments: PostComment[];
+  createdAt: string;
 }
 
 export interface TaskItem {
@@ -130,6 +252,8 @@ export interface TaskItem {
   status: 'TODO' | 'IN_PROGRESS' | 'DONE';
   dueDate: string;
   priority: 'High' | 'Medium' | 'Low';
+  sourceIdeaId?: string;
+  sourceDecisionId?: string;
 }
 
 export interface MilestoneItem {
@@ -160,6 +284,69 @@ export interface ProjectDocument {
   size: string;
   uploadedBy: string;
   uploadedAt: string;
+  url?: string;
+}
+
+export interface WorkspaceOpinion {
+  support: number;
+  needDiscussion: number;
+  concern: number;
+  userVote?: 'support' | 'needDiscussion' | 'concern';
+  comments?: { userName: string; text: string; choice: string; time: string }[];
+}
+
+export interface WorkspaceDiscussion {
+  id: string;
+  projectId: string;
+  type: 'IDEA' | 'OPINION' | 'QUESTION' | 'CONCERN' | 'UPDATE' | 'RESOURCE' | 'HELP';
+  title?: string;
+  content: string;
+  author: {
+    userId: string;
+    name: string;
+    avatar: string;
+    role: string;
+    org: string;
+  };
+  opinions?: WorkspaceOpinion;
+  decisionId?: string;
+  convertedToTaskId?: string;
+  replies?: PostComment[];
+  createdAt: string;
+}
+
+export interface WorkspaceDecision {
+  id: string;
+  projectId: string;
+  title: string;
+  description?: string;
+  options: { id: string; text: string; votesCount: number }[];
+  status: 'OPEN' | 'DECIDED';
+  selectedOptionId?: string;
+  selectedOptionText?: string;
+  decisionReason?: string;
+  userVotedOptionId?: string;
+  createdAt: string;
+  decidedAt?: string;
+}
+
+export interface SolutionCanvasCard {
+  id: string;
+  projectId: string;
+  section: 'problem' | 'users' | 'currentApproach' | 'ideas' | 'proposedSolution' | 'technology' | 'risks' | 'expectedImpact';
+  text: string;
+  authorName: string;
+  createdAt: string;
+}
+
+export interface TeamPulseItem {
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  userRole: string;
+  status: 'ON_TRACK' | 'NEED_HELP' | 'BLOCKED';
+  needText?: string;
+  updatedAt: string;
 }
 
 export interface Project {
@@ -169,17 +356,27 @@ export interface Project {
   name: string;
   description: string;
   status: 'PROTOTYPE_DEV' | 'EVALUATION' | 'PILOT_DEPLOYMENT' | 'COMPLETED';
+  stageLabel?: string;
+  progressPercent: number;
   members: {
     userId: string;
     name: string;
     role: string;
     organization: string;
     avatar: string;
+    focusArea?: string;
   }[];
   tasks: TaskItem[];
   milestones: MilestoneItem[];
   discussions: ProjectMessage[];
   documents: ProjectDocument[];
+  
+  // Workspace specific rich entities
+  workspaceDiscussions?: WorkspaceDiscussion[];
+  workspaceDecisions?: WorkspaceDecision[];
+  canvasCards?: SolutionCanvasCard[];
+  teamPulse?: TeamPulseItem[];
+  
   createdAt: string;
   updatedAt: string;
 }
@@ -203,7 +400,7 @@ export interface Solution {
 }
 
 export interface EvaluationCriteria {
-  problemRelevance: number; // 1 - 5
+  problemRelevance: number;
   technicalFeasibility: number;
   socialImpact: number;
   costFeasibility: number;
@@ -254,12 +451,34 @@ export interface ImpactMetric {
 
 export interface Notification {
   id: string;
-  userId: string; // or 'ALL'
+  userId: string;
   roleTarget?: UserRole;
   title: string;
   message: string;
-  type: 'CHALLENGE_APPROVED' | 'INVITATION_RECEIVED' | 'MESSAGE_POSTED' | 'EVALUATION_COMPLETED' | 'MILESTONE_UPDATED' | 'SYSTEM';
+  type: 'CHALLENGE_APPROVED' | 'INVITATION_RECEIVED' | 'MESSAGE_POSTED' | 'EVALUATION_COMPLETED' | 'MILESTONE_UPDATED' | 'INTEREST_EXPRESSED' | 'CONNECTED' | 'SYSTEM' | 'CO_CREATE_IDEA' | 'CO_CREATE_SKILL' | 'DECISION_MADE';
   read: boolean;
   link?: string;
   createdAt: string;
+}
+
+export interface DirectMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  senderName: string;
+  senderAvatar: string;
+  text: string;
+  createdAt: string;
+}
+
+export interface Conversation {
+  id: string;
+  type: 'DIRECT' | 'PROJECT';
+  title: string;
+  subtitle: string;
+  avatar: string;
+  unreadCount: number;
+  lastMessage: string;
+  lastMessageTime: string;
+  participants: string[];
 }

@@ -61,7 +61,6 @@ export default function SubmitSolutionPage() {
   };
 
   const handleOpenExpertEvaluation = () => {
-    switchRole('EXPERT');
     router.push('/evaluations/sol_smart_irrigation');
   };
 
@@ -74,11 +73,11 @@ export default function SubmitSolutionPage() {
 
         <div className="space-y-1.5">
           <span className="px-3 py-1 rounded-full bg-purple-50 text-purple-700 font-bold text-xs uppercase tracking-wider">
-            Step 5 Complete • Status: Under Evaluation
+            Status: Under Review
           </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900">Solution Submitted to Expert Panel</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900">Solution Submitted for Review</h1>
           <p className="text-xs text-slate-600 max-w-md mx-auto">
-            Your co-developed solution <strong className="text-slate-900">"{formData.title}"</strong> has been routed to the domain expert review panel (ICAR / Agronomy Council).
+            Your co-developed solution <strong className="text-slate-900">"{formData.title}"</strong> is now awaiting evaluation by domain specialists.
           </p>
         </div>
 
@@ -86,10 +85,10 @@ export default function SubmitSolutionPage() {
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
             onClick={handleOpenExpertEvaluation}
-            className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs shadow-lg shadow-purple-600/30 flex items-center justify-center gap-2 transition-all hover:scale-105"
+            className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs shadow-lg shadow-purple-600/30 flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95"
           >
             <UserCheck className="w-4 h-4" />
-            <span>Proceed to Step 6: Expert Review Panel →</span>
+            <span>Open Solution Review →</span>
           </button>
 
           <button
